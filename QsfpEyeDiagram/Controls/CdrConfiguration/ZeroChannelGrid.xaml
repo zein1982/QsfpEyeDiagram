@@ -1,0 +1,152 @@
+﻿<controlsBase:QsfpEyeDiagramControlBase x:Class="QsfpEyeDiagram.Controls.CdrConfiguration.ZeroChannelGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:QsfpEyeDiagram"
+             xmlns:controlsBase="clr-namespace:QsfpEyeDiagram.Controls.Base"
+             xmlns:qsfp="clr-namespace:Std.Modules.ConfigurationParameters.Qsfp;assembly=Std.Modules"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <controlsBase:QsfpEyeDiagramControlBase.Resources>
+        <ResourceDictionary>
+            <qsfp:Channel x:Key="Channel">Zero</qsfp:Channel>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </controlsBase:QsfpEyeDiagramControlBase.Resources>
+
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Path=DataContext}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="Mode">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Content="pwd" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Row="1" Content="rtka__en" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Row="2" Content="dis__autosql" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                </Grid>
+
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Content="rate__select" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Row="1" Content="aux__inp__en" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Row="2" Content="dis__offsetcor" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                </Grid>
+
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Content="cdr__pd__byp" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Row="1" Content="dpolinv" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="1" Header="CTLE Equalization">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Slider x:Name="CtleSlider" Value="{Binding ZeroChannelCdr.Ctle}" Margin="2,2,2,0" VerticalAlignment="Center" SmallChange="1" Maximum="7"/>
+
+                <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" TextWrapping="Wrap" Text="{Binding ElementName=CtleSlider, Path=Minimum}"/>
+                <TextBlock  Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding ZeroChannelCdr.Ctle, Converter={StaticResource CtleValueConverter}, Mode=OneWay}" FontWeight="Bold"/>
+                <TextBlock  Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" TextWrapping="Wrap" Text="{Binding ElementName=CtleSlider, Path=Maximum}"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="2" Header="Output Swing">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox Content="dis__automute" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Column="1" Content="mute__force" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Center"/>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Slider x:Name="OutputSwingSlider" Value="{Binding ZeroChannel.Bias}" Margin="2,0,2,0" VerticalAlignment="Center" SmallChange="1" Maximum="63"/>
+
+                    <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" TextWrapping="Wrap" Text="{Binding ElementName=OutputSwingSlider, Path=Minimum}"/>
+                    <TextBlock  Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding ElementName=OutputSwingSlider, Path=Value}" FontWeight="Bold"/>
+                    <TextBlock  Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" TextWrapping="Wrap" Text="{Binding ElementName=OutputSwingSlider, Path=Maximum}"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="3" Header="Output De-emphasis">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <CheckBox Content="jitter__adjust" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Center"/>
+
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Slider x:Name="DeemphasisSlider" Value="{Binding ZeroChannel.Bias}" Margin="2,0,2,0" VerticalAlignment="Center" SmallChange="1" Maximum="15"/>
+
+                    <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" TextWrapping="Wrap" Text="{Binding ElementName=DeemphasisSlider, Path=Minimum}"/>
+                    <TextBlock  Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding ElementName=DeemphasisSlider, Path=Value}" FontWeight="Bold"/>
+                    <TextBlock  Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" TextWrapping="Wrap" Text="{Binding ElementName=DeemphasisSlider, Path=Maximum}"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</controlsBase:QsfpEyeDiagramControlBase>

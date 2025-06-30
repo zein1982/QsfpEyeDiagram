@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="QSFP_eye_auto.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="BertIP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10.0.30.122</Value>
+    </Setting>
+    <Setting Name="OsaIp" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10.0.30.153</Value>
+    </Setting>
+    <Setting Name="LastUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

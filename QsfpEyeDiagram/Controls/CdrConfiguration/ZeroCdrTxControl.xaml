@@ -1,0 +1,289 @@
+﻿<controlsBase:QsfpEyeDiagramControlBase x:Class="QsfpEyeDiagram.Controls.CdrConfiguration.ZeroCdrTxControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:QsfpEyeDiagram"
+             xmlns:vm="clr-namespace:QsfpEyeDiagram.ViewModels"
+             xmlns:controlsBase="clr-namespace:QsfpEyeDiagram.Controls.Base"
+             xmlns:qsfp="clr-namespace:Std.Modules.ConfigurationParameters.Qsfp;assembly=Std.Modules"
+             mc:Ignorable="d" 
+             IsEnabled="{Binding ZeroChannel.IsEnabled}"
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <controlsBase:QsfpEyeDiagramControlBase.Resources>
+        <ResourceDictionary>
+            <qsfp:Channel x:Key="Channel">Zero</qsfp:Channel>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </controlsBase:QsfpEyeDiagramControlBase.Resources>
+    <Border BorderThickness="2">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="BorderBrush" Value="Red"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ZeroChannel.IsOperationCdrSuccessTx}" Value="True">
+                        <Setter Property="BorderBrush" Value="Green"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Path=DataContext}">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsModuleConnected}" Value="False">
+                            <Setter Property="Background" Value="{StaticResource DisabledConfigGridBackgroundBrush}"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding ZeroChannel.IsEnabled}" Value="False">
+                            <Setter Property="Background" Value="{StaticResource DisabledConfigGridBackgroundBrush}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+
+            <GroupBox Header="Mode" x:Name="gbModeTx">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <CheckBox Content="pwd" IsChecked="{Binding ZeroChannel.PowerDownTx}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
+                              Command="{Binding ZeroChannel.SaveCdrModeTxCommand}">
+                            <CheckBox.CommandParameter>
+                                <Binding Source="{StaticResource Channel}"/>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+                        <CheckBox Grid.Row="1" Content="rtka__en" IsChecked="{Binding ZeroChannel.ClockRecoveryInCdrBypassModeTx}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
+                                  Command="{Binding ZeroChannel.SaveCdrModeTxCommand}">
+                            <CheckBox.CommandParameter>
+                                <Binding Source="{StaticResource Channel}"/>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+
+                        <CheckBox Grid.Row="2" Content="dis__autosql" IsChecked="{Binding ZeroChannel.AutoSquelchTx}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
+                              Command="{Binding ZeroChannel.SaveCdrModeTxCommand}">
+                            <CheckBox.CommandParameter>
+                                <Binding Source="{StaticResource Channel}"/>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+                    </Grid>
+
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <CheckBox Content="rate__select" IsChecked="{Binding ZeroChannel.RateSelectionTx}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
+                            Command="{Binding ZeroChannel.SaveCdrModeTxCommand}">
+                            <CheckBox.CommandParameter>
+                                <Binding Source="{StaticResource Channel}"/>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+
+                        <CheckBox Grid.Row="1" Content="aux__inp__en" IsChecked="{Binding ZeroChannel.DataInputSelectionTx}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
+                            Command="{Binding ZeroChannel.SaveCdrModeTxCommand}">
+                            <CheckBox.CommandParameter>
+                                <Binding Source="{StaticResource Channel}"/>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+
+                        <CheckBox Grid.Row="2" Content="dis__offsetcor" IsChecked="{Binding ZeroChannel.InputOffsetCorrectionTx}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
+                              Command="{Binding ZeroChannel.SaveCdrModeTxCommand}">
+                            <CheckBox.CommandParameter>
+                                <Binding Source="{StaticResource Channel}"/>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+                    </Grid>
+
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <CheckBox Content="cdr__pd__byp"  IsChecked="{Binding ZeroChannel.IsCdrBypassedAndPoweredDownTx}"
+                              HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
+                              Command="{Binding ZeroChannel.SaveCdrModeTxCommand}">
+                            <CheckBox.CommandParameter>
+                                <Binding Source="{StaticResource Channel}"/>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+
+                        <CheckBox Grid.Row="1" Content="dpolinv" IsChecked="{Binding ZeroChannel.HighSpeedDataPolarityInversionTx}"
+                              HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
+                              Command="{Binding ZeroChannel.SaveCdrModeTxCommand}">
+                            <CheckBox.CommandParameter>
+                                <Binding Source="{StaticResource Channel}"/>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+
+                        <Button x:Name="GetCdrButtonTx" Grid.Row="2" Content="Read CDR Tx" Style="{StaticResource RoundedButton}" FontFamily="Segoe UI Emoji" FontSize="14" FontWeight="DemiBold" Margin="5" Height="25"
+                            Command="{Binding ZeroChannel.ReadChannelCdrTxCommand}" CommandParameter="{StaticResource Channel}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="7 0"
+                            IsEnabled="{Binding ZeroChannel.IsNotBuzzyTx}">
+                        </Button>
+                        <Button Grid.Row="2" Content="Write" HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource RoundedButton}"
+                            FontFamily="Segoe UI Emoji" FontSize="14" FontWeight="DemiBold" Margin="5" Height="25" Visibility="Hidden"/>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1" Header="CTLE Equalization">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Slider x:Name="CtleSliderTx" Value="{Binding ZeroChannel.CtleTx}" Margin="2,2,2,0" VerticalAlignment="Center" SmallChange="1" Maximum="7" 
+                            PreviewMouseUp="CtleSlider_PreviewMouseUp" ValueChanged="CtleSliderTx_ValueChanged"/>
+
+                    <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="25,0,0,0" TextWrapping="Wrap" Text="{Binding ElementName=CtleSliderTx, Path=Minimum}"/>
+                    <TextBlock  Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding ZeroChannel.CtleTx, Converter={StaticResource CtleValueConverter}, Mode=OneWay}" FontWeight="Bold"/>
+                    <TextBlock  Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,25,0" TextWrapping="Wrap" Text="{Binding ElementName=CtleSliderTx, Path=Maximum}"/>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="2" Header="Output Swing">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox x:Name="cbDisAutoMute" Content="dis__automute" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Center"
+                              IsChecked="{Binding ZeroChannel.AutomuteTx}" Command="{Binding ZeroChannel.SaveCdrSwingTxCommand}">
+                            <CheckBox.CommandParameter>
+                            <MultiBinding Converter="{StaticResource MultiValueParameterConverter}">
+                                <Binding Source="{StaticResource Channel}"/>
+                                <Binding Path="ZeroChannel"/>
+                            </MultiBinding>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+                        <CheckBox  x:Name="cbMuteForce"  Grid.Column="1" Content="mut__force" HorizontalAlignment="Center" VerticalAlignment="Center"
+                              IsChecked="{Binding ZeroChannel.MuteForceTx}" Command="{Binding ZeroChannel.SaveCdrSwingTxCommand}">
+                            <CheckBox.CommandParameter>
+                                <MultiBinding Converter="{StaticResource MultiValueParameterConverter}">
+                                    <Binding Source="{StaticResource Channel}"/>
+                                    <Binding Path="ZeroChannel"/>
+                                </MultiBinding>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+                        
+                        <Button Grid.Column="2" Content="Save Output Swing" Style="{StaticResource RoundedButton}" FontFamily="Segoe UI Emoji" FontSize="14" FontWeight="DemiBold" Visibility="Hidden"
+                            VerticalAlignment="Center" HorizontalAlignment="Center"  Command="{Binding ZeroChannel.SaveCdrSwingTxCommand}" Padding="5 0" IsEnabled="{Binding ZeroChannel.IsNotBuzzyTx}">
+                            <Button.CommandParameter>
+                                <MultiBinding Converter="{StaticResource MultiValueParameterConverter}">
+                                    <Binding Source="{StaticResource Channel}"/>
+                                    <Binding Path="ZeroChannel"/>
+                                </MultiBinding>
+                            </Button.CommandParameter>
+                        </Button>
+                    </Grid>
+
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Slider x:Name="OutputSwingSliderTx" Value="{Binding ZeroChannel.OutputSwingTx}" Margin="2,0,2,0" VerticalAlignment="Center" SmallChange="1" Maximum="63" 
+                                PreviewMouseUp="OutputSwingSliderTx_PreviewMouseUp" ValueChanged="OutputSwingSliderTx_ValueChanged"/>
+
+                        <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" TextWrapping="Wrap" Text="{Binding ElementName=OutputSwingSliderTx, Path=Minimum}"/>
+                        <TextBlock  Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" 
+                                    Text="{Binding ZeroChannel.OutputSwingTx, Converter={StaticResource SwingTxValueConverter}, Mode=OneWay}" FontWeight="Bold"/>
+                        <TextBlock  Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" TextWrapping="Wrap" Text="{Binding ElementName=OutputSwingSliderTx, Path=Maximum}"/>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="3" Header="Output De-emphasis">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Content="jitter__adjust" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Center" Grid.Column="0"
+                          IsChecked="{Binding ZeroChannel.JitterAdjustTx}"  Command="{Binding ZeroChannel.SaveCdrDeemphasisTxCommand}" x:Name="cbJAdj">
+                            <CheckBox.CommandParameter>
+                                <MultiBinding Converter="{StaticResource MultiValueParameterConverter}">
+                                    <Binding Source="{StaticResource Channel}"/>
+                                    <Binding Path="ZeroChannel"/>
+                                </MultiBinding>
+                            </CheckBox.CommandParameter>
+                        </CheckBox>
+                        <Button Grid.Column="1" Content="Save Output De-emphasis" Style="{StaticResource RoundedButton}" FontFamily="Segoe UI Emoji" FontSize="14" FontWeight="DemiBold" Visibility="Hidden"
+                            VerticalAlignment="Center" HorizontalAlignment="Center" Padding="5, 0" Command="{Binding ZeroChannel.SaveCdrDeemphasisTxCommand}" IsEnabled="{Binding ZeroChannel.IsNotBuzzyTx}">
+                            <Button.CommandParameter>
+                                <MultiBinding Converter="{StaticResource MultiValueParameterConverter}">
+                                    <Binding Source="{StaticResource Channel}"/>
+                                    <Binding Path="ZeroChannel"/>
+                                </MultiBinding>
+                            </Button.CommandParameter>
+
+                            <!--<Button.Style>
+                                <Style BasedOn="{StaticResource RoundedButton}"/>
+                            </Button.Style>-->
+                        </Button>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Slider x:Name="DeemphasisSliderTx" Value="{Binding ZeroChannel.DeemphasisValueTx}" Margin="2,0,2,0" VerticalAlignment="Center" SmallChange="1" Maximum="15" 
+                                PreviewMouseUp="DeemphasisSliderTx_PreviewMouseUp" ValueChanged="DeemphasisSliderTx_ValueChanged"/>
+
+                        <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" TextWrapping="Wrap" Text="{Binding ElementName=DeemphasisSliderTx, Path=Minimum}"/>
+                        <TextBlock  Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"
+                                    Text="{Binding ZeroChannel.DeemphasisValueTx, Converter={StaticResource DeemphValueConverter}, Mode=OneWay}" FontWeight="Bold"/>
+                        <TextBlock  Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" TextWrapping="Wrap" Text="{Binding ElementName=DeemphasisSliderTx, Path=Maximum}"/>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </Border>
+</controlsBase:QsfpEyeDiagramControlBase>
+

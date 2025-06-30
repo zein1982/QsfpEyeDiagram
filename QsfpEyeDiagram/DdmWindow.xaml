@@ -1,0 +1,109 @@
+﻿<Window x:Class="QsfpEyeDiagram.DdmWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QsfpEyeDiagram"
+        xmlns:dc="clr-namespace:QsfpEyeDiagram.ViewModels"
+        mc:Ignorable="d"
+        Title="Данные DDM" Height="390" Width="176" ShowInTaskbar="False" Focusable="False" WindowStartupLocation="CenterOwner" IsTabStop="False" WindowStyle="ToolWindow">
+    <Window.DataContext>
+        <dc:QsfpEyeDiagramViewModel/>
+    </Window.DataContext>
+    <Grid Margin="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="23*"/>
+            <RowDefinition Height="23*"/>
+            <RowDefinition Height="98*"/>
+            <RowDefinition Height="98*"/>
+            <RowDefinition Height="98*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="77*"/>
+            <ColumnDefinition Width="93*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Margin="0,0,0,25" Grid.RowSpan="2" Background="YellowGreen">
+            <TextBlock Text="Temp. С" VerticalAlignment="Center"/>
+            <TextBlock Text="o" VerticalAlignment="Top" FontSize="8" Margin="1,3,0,0"/>
+        </StackPanel>
+        <TextBox Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Height="18" Width="80"
+                 Text="{Binding DdmTemperature, StringFormat={}{0:n2}}" HorizontalContentAlignment="Right"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Voltage V" VerticalAlignment="Center" Height="16" Background="#FFC9DDFD"/>
+        <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="80" IsReadOnly="True" Height="18" Width="80"
+                 Text="{Binding DdmVoltage, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right"/>
+
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Background="Azure" Margin="0,0,0,106" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="77*"/>
+                <ColumnDefinition Width="93*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Tx1 Bias mA" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Height="18" Width="80"
+                     Text="{Binding DdmTxBias1, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Tx2 Bias mA" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Row="1" Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Height="18" Width="80"
+                     Text="{Binding DdmTxBias2, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Tx3 Bias mA" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Row="2" Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Height="18" Width="80"
+                     Text="{Binding DdmTxBias3, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Tx4 Bias mA" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Row="3" Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Height="18" Width="80"
+                     Text="{Binding DdmTxBias4, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right"/>
+        </Grid>
+        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Background="#FFE4A8A8" Margin="0,0,0,106" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="77*"/>
+                <ColumnDefinition Width="93*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Tx1 Pwr dBm" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Width="80"
+                     Text="{Binding DdmTxPower1, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right" Height="18"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Tx2 Pwr dBm" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Row="1" Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Width="80"
+                     Text="{Binding DdmTxPower2, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right" Height="18"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Tx3 Pwr dBm" VerticalAlignment="Center" Height="16" />
+            <TextBox Grid.Row="2" Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Width="80"
+                     Text="{Binding DdmTxPower3, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right" Height="18"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Tx4 Pwr dBm" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Row="3" Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Width="80"
+                     Text="{Binding DdmTxPower4, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right" Height="18"/>
+        </Grid>
+        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Background="LightGreen">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="77*"/>
+                <ColumnDefinition Width="93*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Rx1 Pwr dBm" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Height="18" Width="80"
+                     Text="{Binding DdmRxPower1, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Rx2 Pwr dBm" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Row="1" Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Height="18" Width="80"
+                     Text="{Binding DdmRxPower2, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Rx3 Pwr dBm" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Row="2" Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Height="18" Width="80"
+                     Text="{Binding DdmRxPower3, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Rx4 Pwr dBm" VerticalAlignment="Center" Height="16"/>
+            <TextBox Grid.Row="3" Grid.Column="1" MinWidth="80" VerticalAlignment="Center" HorizontalAlignment="Center" IsReadOnly="True" Height="18" Width="80"
+                     Text="{Binding DdmRxPower4, StringFormat={}{0:N2}}" HorizontalContentAlignment="Right"/>
+        </Grid>
+
+    </Grid>
+</Window>

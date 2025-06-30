@@ -1,0 +1,239 @@
+﻿<Window x:Class="QSFP_eye_auto.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QSFP_eye_auto"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:vm="clr-namespace:QSFP_eye_auto.ViewModels"
+        xmlns:eye="clr-namespace:QsfpEyeDiagram.ViewModels;assembly=QsfpEyeDiagram"
+        mc:Ignorable="d"
+        Title="Настройка оптических параметров QSFP (автоматически)" Height="300" Width="800" Closing="Window_Closing">
+    <Window.DataContext>
+        <vm:AutoTuneViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" DataContext="{Binding Path=QsfpViewModel}">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsOperationInProgress}" Value="True">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,1">
+                <Border BorderBrush="Blue" BorderThickness="2" CornerRadius="5" MinWidth="25" MinHeight="22" Margin="10,2,3,2" ToolTip="Статус модуля">
+                    <TextBlock Text="M" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="DemiBold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="Blue"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsModuleConnected}" Value="True">
+                                        <Setter Property="Foreground" Value="Yellow"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Red"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsModuleConnected}" Value="True">
+                                    <Setter Property="Background" Value="Green"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+                <Border x:Name="brdOsc" BorderBrush="Gray" BorderThickness="2" CornerRadius="5" MinWidth="25" Margin="2" ToolTip="Статус осциллографа" MouseRightButtonUp="BrdOsc_MouseRightButtonUp">
+                    <TextBlock Text="O" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="DemiBold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="Blue"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsBertwaveConnected}" Value="True">
+                                        <Setter Property="Foreground" Value="Yellow"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Red"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsBertwaveConnected}" Value="True">
+                                    <Setter Property="Background" Value="Green"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                   
+                </Border>
+                <Border  x:Name ="BrdOsa" BorderBrush="Gray" BorderThickness="2" CornerRadius="5" MinWidth="25" Margin="2" ToolTip="Статус анализатора спектра" MouseRightButtonUp="BrdOsa_MouseRightButtonUp">
+                    <TextBlock Text="S" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="DemiBold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="Blue"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsOsaConnected}" Value="True">
+                                        <Setter Property="Foreground" Value="Yellow"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Red"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsOsaConnected}" Value="True">
+                                    <Setter Property="Background" Value="Green"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+            </StackPanel>
+            <ComboBox x:Name="cbPort" Grid.Row="1" Grid.Column="0" Margin="5,12,10,8" ItemsSource="{Binding ComPortList}" 
+                      SelectedIndex="{Binding ComPortListSelectedIndex}" SelectedItem="{Binding ComPortListSelectedItem}" Height="21" VerticalAlignment="Top"/>
+            <StackPanel Orientation="Horizontal"  Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left">
+                <Button FontWeight="Bold" Margin="10" Style="{StaticResource ButtonAnimationStyle}" VerticalAlignment="Center" Command="{Binding ConnectToUtbApiCommand}"
+                    Height="25" Width="25" ToolTip="Подключить">
+                    <Button.Content>
+                        <Image Source="/Images/Connect.png" />
+                    </Button.Content>
+                </Button>
+                <Border x:Name="brdState" Width="20" Height="20" CornerRadius="5" Margin="0,0,5,0">
+                    <!--<Border.DataContext>
+                        <vm:AutoTuneViewModel/>
+                    </Border.DataContext>-->
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="ToolTip" Value="Неизвестное состояние"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding MState}" Value="NotTuned">
+                                    <Setter Property="Background" Value="Red"/>
+                                    <Setter Property="ToolTip" Value="Не настроен"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding MState}" Value="NowTune">
+                                    <Setter Property="Background" Value="Yellow"/>
+                                    <Setter Property="ToolTip" Value="Идет настройка"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding MState}" Value="Tuned">
+                                    <Setter Property="Background" Value="Green"/>
+                                    <Setter Property="ToolTip" Value="Настроен"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding MState}" Value="NotConnected">
+                                    <Setter Property="Background" Value="LightGray"/>
+                                    <Setter Property="ToolTip" Value="Не подключен"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding MState}" Value="Connected">
+                                    <Setter Property="Background" Value="Blue"/>
+                                    <Setter Property="ToolTip" Value="Подключен"/>
+                                </DataTrigger>
+
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+
+
+            </StackPanel>
+            <!--CommandParameter="{Binding ComPortListSelectedItem}"-->
+            <TextBlock Text="{Binding UID, Converter={StaticResource BytesConverter}, Mode=OneWay}" Foreground="Green" FontWeight="DemiBold" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="3,0,0,1">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsModuleConnected}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <ProgressBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsIndeterminate="True" Height="3" VerticalAlignment="Top">
+                <ProgressBar.Style>
+                    <Style TargetType="ProgressBar">
+                        <Setter Property="Visibility" Value="Hidden"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsOperationInProgress}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ProgressBar.Style>
+            </ProgressBar>
+
+        </Grid>
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" IsEnabled="{Binding QsfpViewModel.IsModuleConnected}">
+        <Button Style="{StaticResource RoundedButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Left" Height="23"
+                   Command="{Binding TuneCommand}" Margin="5" Padding="3" IsEnabled="{Binding QsfpViewModel.IsModuleConnected}">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Images/tune-blue (1).png" Margin="0,0,5,0" />
+
+                    <TextBlock Text="Настроить" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Канал:" Margin="5"/>
+                <ComboBox SelectedIndex="{Binding SelectedChannel}" ItemsSource="{Binding ChList}" FontSize="14" IsReadOnly="True" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Число переходов ER: " VerticalAlignment="Center" Margin="5"/>
+                <TextBox Text="{Binding MaxHops}" Width="25" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Right">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding QsfpViewModel.IsModuleConnected}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Bias" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                <TextBox Text="{Binding FirstBias}" Margin=" 5"/>
+                <TextBlock Text="Modulation" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                <TextBox Text="{Binding FirstMod}" Margin="5"/>
+            </StackPanel>
+
+        </StackPanel>
+            <ListBox ItemsSource="{Binding Log}" FontSize="16" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                 IsSynchronizedWithCurrentItem="True" ScrollViewer.CanContentScroll="True" Background="#FFE1EAE3"/>
+        <StatusBar Grid.Row="2" Grid.ColumnSpan="2" >
+            <TextBlock Text="{Binding SbText}" Margin="5,0,0,0"/>
+        </StatusBar>
+    </Grid>
+</Window>

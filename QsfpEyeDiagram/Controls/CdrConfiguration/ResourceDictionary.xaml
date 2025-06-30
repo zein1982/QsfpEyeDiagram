@@ -1,0 +1,48 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:QsfpEyeDiagram.Controls.CdrConfiguration">
+
+    <Style x:Key="ChannelConfigurationButton" TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+        <Setter Property="IsEnabled" Value="False"/>
+
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsModuleConnected}" Value="True"/>
+                    <Condition Binding="{Binding IsOperationInProgress}" Value="False"/>
+                </MultiDataTrigger.Conditions>
+
+                <MultiDataTrigger.Setters>
+                    <Setter Property="IsEnabled" Value="True"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="IsEnabled" Value="False"/>
+        <Setter Property="Background" Value="Pink"/>
+
+        <Setter Property="LayoutTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="1.3" ScaleY="1.3"/>
+            </Setter.Value>
+        </Setter>
+
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsModuleConnected}" Value="True"/>
+                    <Condition Binding="{Binding IsOperationInProgress}" Value="False"/>
+                </MultiDataTrigger.Conditions>
+
+                <MultiDataTrigger.Setters>
+                    <Setter Property="IsEnabled" Value="True"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked}" Value="True">
+                <Setter Property="Background" Value="LightGreen"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

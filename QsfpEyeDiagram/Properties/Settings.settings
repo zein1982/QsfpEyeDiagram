@@ -1,0 +1,48 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="QsfpEyeDiagram.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DatabaseServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10.0.30.105</Value>
+    </Setting>
+    <Setting Name="DatabaseUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)">commonUser</Value>
+    </Setting>
+    <Setting Name="DatabasePassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)">commonUser3000!</Value>
+    </Setting>
+    <Setting Name="DatabaseName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">production</Value>
+    </Setting>
+    <Setting Name="BertwaveIP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10.0.30.122</Value>
+    </Setting>
+    <Setting Name="OSAIP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10.0.30.165</Value>
+    </Setting>
+    <Setting Name="intreval" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">4500</Value>
+    </Setting>
+    <Setting Name="lastUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ch0Att" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">3.95</Value>
+    </Setting>
+    <Setting Name="ch1Att" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">3.95</Value>
+    </Setting>
+    <Setting Name="ch2Att" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">3.95</Value>
+    </Setting>
+    <Setting Name="ch3Att" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">3.95</Value>
+    </Setting>
+    <Setting Name="sigma" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.05</Value>
+    </Setting>
+    <Setting Name="BertwaveIP1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10.0.30.142</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

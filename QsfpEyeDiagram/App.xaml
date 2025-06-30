@@ -1,0 +1,113 @@
+﻿<Application x:Class="QsfpEyeDiagram.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:QsfpEyeDiagram"
+             xmlns:converters="clr-namespace:QsfpEyeDiagram.Converters"
+             StartupUri="LoginWindow.xaml" >
+    
+    <Application.Resources>
+        <converters:NullableDoubleToStringConverter x:Key="NullableDoubleConverter"/>
+        <converters:NullableDoubleToStringConverter1 x:Key="NullableLambdaConverter"/>
+        <converters:MultiValueParameterConverter x:Key="MultiValueParameterConverter"/>
+        <converters:CtleValueConverter x:Key="CtleValueConverter"/>
+        <converters:SlaValueConverter x:Key="SlaValueConverter"/>
+        <converters:SwingTxValueConverter x:Key="SwingTxValueConverter"/>
+        <converters:SwingRxValueConverter x:Key="SwingRxValueConverter"/>
+        <converters:DeemphValueConverter x:Key="DeemphValueConverter"/>
+        <converters:TempToDoubleConverter x:Key="TempConverter"/>
+        <converters:ExponentialValueConverter x:Key="ExponentialConverter"/>
+        <converters:ByteArrayConverter x:Key="BytesConverter"/>
+
+        <!--<Brush x:Key="ChannelConfigurationBorderBrush">#FF9C98F1</Brush>-->
+        <Brush x:Key="ChannelConfigurationBorderBrush" >#80000000</Brush>
+        <Brush x:Key="DisabledConfigGridBackgroundBrush" >#FFECECEC</Brush>
+        <VisualBrush x:Key="NoActivePanelBrush">#fff0c0ff</VisualBrush>
+
+        <Style x:Key="ThickBlackBorderGroupBox" TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+        </Style>
+
+        <Style x:Key="RoundedButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="5"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+
+        <Style x:Key="ModuleDependentButton" TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+            <Setter Property="IsEnabled" Value="False"/>
+
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding IsModuleConnected}" Value="True"/>
+                        <Condition Binding="{Binding IsOperationInProgress}" Value="False"/>
+                    </MultiDataTrigger.Conditions>
+
+                    <MultiDataTrigger.Setters>
+                        <Setter Property="IsEnabled" Value="True"/>
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RoundedTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="7"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+
+        <Style x:Key="CenteredDataGridColumnHeader" TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="CenteredDataGridCell" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--<Style x:Key="TecDataGridCell" TargetType="DataGridCell" BasedOn="{StaticResource CenteredDataGridCell}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RefreshTecParameters}" Value="False">
+                    <Setter Property="Background" Value="Gray"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>-->
+
+        <Style x:Key="WavelengthDataGridCell" TargetType="DataGridCell" BasedOn="{StaticResource CenteredDataGridCell}">
+            <Setter Property="Background" Value="{Binding Background}"/>
+            <Setter Property="FontWeight" Value="{Binding FontWeight}"/>
+        </Style>
+
+        <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
+            <Setter Property="IsEnabled" Value="False"/>
+
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding IsModuleConnected}" Value="True"/>
+                        <Condition Binding="{Binding IsOperationInProgress}" Value="False"/>
+                    </MultiDataTrigger.Conditions>
+
+                    <MultiDataTrigger.Setters>
+                        <Setter Property="IsEnabled" Value="True"/>
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </Application.Resources>
+</Application>

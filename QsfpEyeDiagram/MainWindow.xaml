@@ -1,0 +1,1129 @@
+﻿<Window x:Class="QsfpEyeDiagram.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QsfpEyeDiagram"
+        xmlns:viewModels="clr-namespace:QsfpEyeDiagram.ViewModels"
+        xmlns:channelContols="clr-namespace:QsfpEyeDiagram.Controls.ChannelConfiguration"
+        xmlns:cdrControls="clr-namespace:QsfpEyeDiagram.Controls.CdrConfiguration" xmlns:dvc1="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen" 
+        Title="{Binding Title}" Icon="Icons/favicon.ico" Height="860" Width="1500" Closed="Window_Closed" Closing="Window_Closing">
+
+    <Window.DataContext>
+        <viewModels:QsfpEyeDiagramViewModel/>
+    </Window.DataContext>
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Сохранить" Command="{Binding SaveToFileCommand}"/>
+            <MenuItem Header="Загрузить" Command="{Binding ReadFromFileCommand}"/>
+            <MenuItem Header ="Значения DDM" Command="{Binding DdmValueShowCommand}"/>
+            <!--<MenuItem Header="Настройки"  x:Name="miSettings" Click="miSettings_Click"/>-->
+            <!--<MenuItem Header="График автонастройки TEC" x:Name="miPlot" IsCheckable="True" Click="MPlot_Click"/>-->
+        </ContextMenu>
+    </Window.ContextMenu>
+    <Window.Resources>
+        <Style x:Key="TecDataGridCell" TargetType="DataGridCell" BasedOn="{StaticResource CenteredDataGridCell}">
+            <Style.Triggers>
+                <!--<DataTrigger Binding="{Binding RefreshTecParameters}" Value="False">
+                    <Setter Property="Background" Value="Gray"/>
+                </DataTrigger>-->
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="WavelengthDataGridCell" TargetType="DataGridCell" BasedOn="{StaticResource CenteredDataGridCell}">
+            <Setter Property="Background" Value="{Binding Background}"/>
+            <Setter Property="FontWeight" Value="{Binding FontWeight}"/>
+        </Style>
+
+        <Style x:Key="TabItemStyle" TargetType="TabItem">
+            <Setter Property="Background" Value="AntiqueWhite"/>
+        </Style>
+
+        <Style x:Key="LambdaValueStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="Red"/>
+            <Setter Property="MinWidth"  Value="100"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="FourChannelOscyllStyle" TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Is4C}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="OneChannelOscyllStyle" TargetType="RadioButton">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Is4C}" Value="False">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="3">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="7*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel>
+
+            <GroupBox Header="Общие команды" Style="{StaticResource ThickBlackBorderGroupBox}">
+                <GroupBox.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#193CE071" Offset="0.176"/>
+                        <GradientStop Color="#1996491E" Offset="1"/>
+                    </LinearGradientBrush>
+                </GroupBox.Background>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3*"/>
+                        <RowDefinition Height="15"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="86*"/>
+                            <ColumnDefinition Width="15*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border BorderThickness="1" Margin="3" CornerRadius="15" >
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="LightGreen"/>
+                                    <Setter Property="BorderBrush" Value="LightGreen"/>
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding OperationSuccess}" Value="False">
+                                            <Setter Property="Background" Value="Red"/>
+                                            <Setter Property="BorderBrush" Value="Red"/>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding IsModuleConnected}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding IsOperationInProgress}" Value="True">
+                                            <Setter Property="Visibility" Value="Hidden"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="OK" VerticalAlignment="Center" FontSize="40" FontWeight="Heavy">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding OperationSuccess}" Value="False">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                        <Grid Grid.Column="1" Margin="0,0,2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="89"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel  Grid.Column="0" Orientation="Horizontal">
+                                <ComboBox Margin="10,8,0,7" SelectedIndex="{Binding SelectedOscyll}" SelectionChanged="ComboBox_SelectionChanged">
+                                    <ComboBoxItem Content="1к. осциллограф"/>
+                                    <ComboBoxItem Content="4к. осциллограф"/>
+                                </ComboBox>
+                                <TextBlock HorizontalAlignment="Right" Margin="5,11" TextWrapping="Wrap" Text="IP адрес:" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="16" Width="56"/>
+                            </StackPanel>
+
+                            <TextBox Grid.Column="1" Height="24" TextWrapping="Wrap" Text="{Binding BertwaveIpAddress}" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                                 HorizontalContentAlignment="Center" FontSize="12" FontWeight="SemiBold" Margin="0,7" x:Name="tbOscylIP" LostFocus="tbOscylIP_LostFocus" >
+                                <TextBox.Style>
+                                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource RoundedTextBox}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsBertwaveConnected}" Value="True">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+
+                            <Button Grid.Column="2" Margin="5,7,5,7" VerticalAlignment="Center" Height="24" FontSize="12" FontWeight="DemiBold">
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource RoundedButton}">
+                                        <Setter Property="Content" Value="Подключить"/>
+                                        <Setter Property="Command" Value="{Binding ConnectToBertwaveCommand}"/>
+
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsBertwaveConnected}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="Content" Value="Отключить"/>
+                                                    <Setter Property="Command" Value="{Binding DisconnectFromBertwaveCommand}"/>
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding IsOperationInProgress}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" TextWrapping="Wrap" Text="IP адрес OSA:"
+                                                   VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Margin="0,10,0,11" Height="16" Width="84"/>
+                            <TextBox Grid.Column="1" Grid.Row="1"  Height="24" TextWrapping="Wrap" Text="{Binding OsaIpAddress}" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                                 HorizontalContentAlignment="Center" FontSize="12" FontWeight="SemiBold" Margin="0,6,0,7" x:Name="tbOsaIP" LostFocus="tbOsaIP_LostFocus" >
+                                <TextBox.Style>
+                                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource RoundedTextBox}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOsaConnected}" Value="True">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <Button Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" Margin="5,6,5,7" x:Name="btnOsaConnect"
+                                               Height="24" FontSize="12" FontWeight="DemiBold">
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource RoundedButton}">
+                                        <Setter Property="Content" Value="Подключить"/>
+                                        <Setter Property="Command" Value="{Binding ConnectToOsaCommand}"/>
+
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOsaConnected}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="Content" Value="Отключить"/>
+                                                    <Setter Property="Command" Value="{Binding DisconnectFromOsaCommand}"/>
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding IsOperationInProgress}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+                                            <!--<DataTrigger Binding="{Binding IsAutotuneProcessing}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>-->
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <!--<Button Content="Обновить" Margin="8" Style="{StaticResource RoundedButton}" />-->
+                            <Border  CornerRadius="8"  Margin="10,5">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="Red"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsBertwaveConnected}" Value="True">
+                                                <Setter Property="Background" Value="Green"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                            <Border Grid.Row="1" CornerRadius="8" Margin="10,5" Panel.ZIndex="1">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="Red"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOsaConnected}" Value="True">
+                                                <Setter Property="Background" Value="Green"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+
+                            <ProgressBar Grid.Row="1" Margin="10,5" IsIndeterminate="True" 
+                                         x:Name="pbOsaConnected" Panel.ZIndex="2" Height="10" Foreground="Green" Opacity="0.85" BorderBrush="{x:Null}" >
+                                <ProgressBar.Background>
+                                    <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                        <GradientStop Color="Red" Offset="0"/>
+                                        <GradientStop Color="Lime" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </ProgressBar.Background>
+                                <ProgressBar.Style>
+                                    <Style TargetType="ProgressBar">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding OsaConnectionProgress}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsOsaConnected}" Value="True">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ProgressBar.Style>
+                            </ProgressBar>
+
+                        </Grid>
+
+                    </Grid>
+
+                    <ProgressBar x:Name="pbMain" Grid.Row="1" Margin="5,0" Value="{Binding OperationProgressPercent}" VerticalAlignment="Top" Height="10" >
+                        <ProgressBar.Style>
+                            <Style TargetType="ProgressBar">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="IsIndeterminate" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsOperationInProgress}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding IsIndefinitelyLongOperation}" Value="True">
+                                        <Setter Property="IsIndeterminate" Value="True"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ProgressBar.Style>
+                    </ProgressBar>
+                    <TextBlock x:Name="tbMessage" Text="Идет считывание параметров CDR модуля..." Grid.Row="1"  Panel.ZIndex="2" VerticalAlignment="Top" HorizontalAlignment="Center"
+                               FontSize="12" FontWeight="Bold" Foreground="Red">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Hidden"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCdrReading}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1" Header="Подключения" Style="{StaticResource ThickBlackBorderGroupBox}">
+                <StackPanel >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="155*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="84*"/>
+                            <RowDefinition Height="30*"/>
+                            <RowDefinition Height="293*"/>
+                        </Grid.RowDefinitions>
+
+                        <GroupBox Header="Плата и модуль" Grid.Row="0" Background="#99E8E8E8" Grid.ColumnSpan="2">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="3*"/>
+                                    <RowDefinition/>
+                                    <!--<RowDefinition/>-->
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="236*"/>
+                                    <ColumnDefinition Width="283*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" Height="19" Width="151" >
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="Плата не подключена"/>
+                                            <Setter Property="Foreground" Value="Red"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsUtbConnected}" Value="True">
+                                                    <Setter Property="Text" Value="Плата подключена"/>
+                                                    <Setter Property="Foreground" Value="Green"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                    <TextBlock HorizontalAlignment="Left" Margin="5" VerticalAlignment="Center" FontSize="14" FontWeight="Bold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="Модуль не подключен"/>
+                                                <Setter Property="Foreground" Value="Red"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsModuleConnected}" Value="True">
+                                                        <Setter Property="Text" Value="Модуль подключен"/>
+                                                        <Setter Property="Foreground" Value="Green"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="20,0,0,0"  VerticalAlignment="Center"/>
+
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
+                                    <ComboBox x:Name="ComPortComboBox" IsEditable="False"
+                                          ItemsSource="{Binding ComPortList}" SelectedIndex="{Binding ComPortListSelectedIndex}" SelectedItem="{Binding ComPortListSelectedItem}"
+                                          Margin="5" Height="25" Width="100">
+                                        <ComboBox.Style>
+                                            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsUtbConnected}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ComboBox.Style>
+                                    </ComboBox>
+                                    <Button x:Name="RefreshComPortListButton" Command="{Binding DisconnectFromUtbAndRefreshComPortListCommand}"
+                                            FontFamily="Segoe UI Emoji" FontSize="14" FontWeight="DemiBold" Margin="5" Height="25" Width="Auto" ToolTip="Обновить">
+                                        <Button.Content>
+                                            <Image Source="/Icons/refresh.png" Margin="2"/>
+                                        </Button.Content>
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsUtbConnected}" Value="True">
+                                                        <Setter Property="Visibility" Value="Hidden"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button x:Name="ConnectToUtbButton" 
+                                            FontFamily="Segoe UI Emoji" FontSize="14" FontWeight="DemiBold" Height="25" >
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource RoundedButton}">
+                                                <Setter Property="Content" Value="Подключить"/>
+                                                <Setter Property="Command" Value="{Binding ConnectToUtbCommand}"/>
+                                                <Setter Property="CommandParameter" Value="{Binding ComPortListSelectedItem}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsModuleTuneEnded}" Value="False">
+                                                        <Setter Property="Content" Value="Завершить"/>
+                                                        <Setter Property="Command" Value="{Binding CompleteTuneCommand}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsCdrReading}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
+                                </StackPanel>
+                                <Grid Grid.Row="1" Grid.Column="1" Margin="3,0,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="21*"/>
+                                        <ColumnDefinition Width="104"/>
+                                        <ColumnDefinition Width="125*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button Content="A" VerticalAlignment="Center" FontSize="14" FontWeight="Bold"
+                                            VerticalContentAlignment="Top" ToolTip="Автоматическая настройка">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsModuleConnected}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0" HorizontalAlignment="Right">
+                                        <TextBox x:Name="tbModCurrent" Text="{Binding Current3v3, Mode=OneWay}" IsEnabled="False" FontSize="14" Margin="0,0,5,0" HorizontalContentAlignment="Right" Width="Auto"/>
+                                        <TextBlock Text="mA" VerticalAlignment="Center" FontSize="14" Width="auto"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,5,7">
+                                        <TextBox x:Name="tbMobPower" Text="{Binding Power3v3}" VerticalAlignment="Center"  FontSize="14" Margin="0,7,0,0" HorizontalContentAlignment="Right" IsEnabled="False">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="Foreground" Value="Blue"/>
+                                                    <Setter Property="FontWeight" Value="Normal"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsPowerBig}" Value="True">
+                                                            <Setter Property="Foreground" Value="Red"/>
+                                                            <Setter Property="FontWeight" Value="Bold"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                        <TextBlock Text="mW" FontSize="14" Margin="5,10,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </GroupBox>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Bottom" Margin="10,0,0,3" Grid.ColumnSpan="2">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Background="LightYellow">
+                                <CheckBox Content="Mod__Absent" VerticalAlignment="Bottom" Margin="5,0" FontSize="14" IsEnabled="False" IsChecked="{Binding ModAbsent, Mode=OneWay}">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox">
+                                            <Setter Property="Background" Value="AliceBlue"/>
+
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
+                                <CheckBox Content="Interrupt" VerticalAlignment="Bottom" Margin="8,0" FontSize="14" IsEnabled="False" IsChecked="{Binding Interrupt, Mode=OneWay}">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox">
+                                            <Setter Property="Background" Value="AliceBlue"/>
+                                        </Style>
+                                    </CheckBox.Style>
+
+                                </CheckBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="30,0,0,0" Background="LightCyan">
+                                <CheckBox Content="Mod_DeSel" Margin="8,0,5,0" FontSize="14" IsChecked="{Binding ModDeSel}" Command="{Binding WriteModuleParamsCommand}"></CheckBox>
+                                <CheckBox Content="ResetL" Margin="5,0,5,0" FontSize="14" IsChecked="{Binding ResetL}" Command="{Binding WriteModuleParamsCommand}"></CheckBox>
+                                <CheckBox Content="LPMode" Margin="5,0,5,0" FontSize="14" IsChecked="{Binding LPMode}" Command="{Binding WriteModuleParamsCommand}"></CheckBox>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Panel.ZIndex="2" Height="25" Margin="80,0,0,0" VerticalAlignment="Top" Grid.Row="2">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsUidNotNull}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <TextBlock Text="UID модуля " FontWeight="Bold" FontSize="12" Margin="120,5,0,0"/>
+                            <TextBox Text="{Binding UID, Converter={StaticResource BytesConverter}, Mode=OneWay}" Margin="4" VerticalAlignment="Center" Width="Auto" IsReadOnly="True"/>
+                        </StackPanel>
+                        <TabControl Grid.Row="2" Margin="0,3,-1,0" HorizontalAlignment="Left" Width="529" Grid.ColumnSpan="2">
+                            <TabItem>
+                                <TabItem.Header>
+                                    <TextBlock Text="Параметры диаграммы глаза"  FontSize="12" Foreground="#FFDE8212"/>
+                                </TabItem.Header>
+                                <Grid Width="Auto">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="0.5*"/>
+                                        <RowDefinition Height="5*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Border Grid.Row="1" BorderBrush="Black" BorderThickness="0 1 0 0" Background="#FFF5F5FF"/>
+
+                                    <Grid Grid.Row="0" Margin="0,0,7,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="145"/>
+                                            <ColumnDefinition Width="102"/>
+                                            <ColumnDefinition Width="86"/>
+                                            <ColumnDefinition Width="85"/>
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="Канал" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold" Height="16" Margin="55,0,54,0" Width="36"/>
+                                        <TextBlock Text="A" Grid.Column="1"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold" Height="16" Width="10" 
+                                                   Style="{StaticResource FourChannelOscyllStyle}" Margin="46,0"/>
+                                        <RadioButton GroupName="OneChannel" Content="A" Grid.Column="1" FontWeight="Bold" VerticalAlignment="Center" FontSize="12" Style="{StaticResource OneChannelOscyllStyle}"
+                                                     Command="{Binding ChSelectCommand}" CommandParameter="A" HorizontalAlignment="Center" Height="16" Width="Auto" IsEnabled="{Binding IsBertwaveConnected}"/>
+                                        <TextBlock Text="B" Grid.Column="2"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold" Height="16" Width="10"
+                                                   Margin="39,0,37,0" Style="{StaticResource FourChannelOscyllStyle}"/>
+                                        <RadioButton GroupName="OneChannel" Content="B" Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" FontSize="12" Style="{StaticResource OneChannelOscyllStyle}"
+                                                     Command="{Binding ChSelectCommand}" CommandParameter="B" HorizontalAlignment="Center" Height="16" Margin="31,0,27,0" Width="Auto" IsEnabled="{Binding IsBertwaveConnected}"/>
+                                        <TextBlock Text="C" Grid.Column="3"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold" Height="16" Width="10"
+                                                   Margin="47,0,28,0" Style="{StaticResource FourChannelOscyllStyle}"/>
+                                        <RadioButton GroupName="OneChannel" Content="C" Grid.Column="3" FontWeight="Bold" VerticalAlignment="Center" FontSize="12" Style="{StaticResource OneChannelOscyllStyle}"
+                                                     Command="{Binding ChSelectCommand}" CommandParameter="C" HorizontalAlignment="Center" Height="16" Margin="31,0,28,0" Width="Auto" IsEnabled="{Binding IsBertwaveConnected}"/>
+                                        <TextBlock Text="D" Grid.Column="4"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold" Height="16" Width="10"
+                                                   Margin="52,0,36,0" Style="{StaticResource FourChannelOscyllStyle}"/>
+                                        <RadioButton GroupName="OneChannel" Content="D" Grid.Column="4" FontWeight="Bold" VerticalAlignment="Center" FontSize="12" Style="{StaticResource OneChannelOscyllStyle}"
+                                                     Command="{Binding ChSelectCommand}" CommandParameter="D"  HorizontalAlignment="Center" Height="16" Margin="35,0" Width="Auto" IsEnabled="{Binding IsBertwaveConnected}"/>
+                                    </Grid>
+
+                                    <Grid Grid.Row="1" >
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="146"/>
+                                            <ColumnDefinition Width="86*"/>
+                                            <ColumnDefinition Width="87*"/>
+                                            <ColumnDefinition Width="87*"/>
+                                            <ColumnDefinition Width="87*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                                            <Label Margin="5,2,0,2" Content="Crossing" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                            <TextBlock Text="(%)" Width="Auto" Height="Auto" VerticalAlignment="Center" Margin="0,2,0,0" HorizontalAlignment="Left"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CrossA, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding CrossB, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding CrossC, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding CrossD, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+
+                                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
+                                            <Label Grid.Row="1" Grid.Column="0" Margin="5,2,0,2" Content="SNR" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                            <!--<TextBlock Text="(dB)" Width="Auto" Height="Auto" VerticalAlignment="Center" Margin="0,2,0,0" HorizontalAlignment="Left"/>-->
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SnrA, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding SnrB, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding SnrC, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding SnrD, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+
+                                        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0">
+                                            <Label Margin="5,2,0,2" Content="Average Power" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                            <TextBlock Text="(dBm)" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding AvePowerA, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding AvePowerB, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding AvePowerC, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding AvePowerD, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+
+                                        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0">
+                                            <Label  Margin="5,2,0,2" Content="Extinction Ratio" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                            <TextBlock Text="(dB)" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ExtRatioA, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding ExtRatioB, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding ExtRatioC, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding ExtRatioD, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+
+                                        <Label Grid.Row="4" Grid.Column="0">
+                                            <Label.Content>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Jitter" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Margin="5,0,0,0"/>
+                                                    <TextBlock Text="p-p" VerticalAlignment="Bottom" />
+                                                    <TextBlock Text="(mUI)" Width="Auto" Height="Auto" VerticalAlignment="Center" Margin="5,2,0,0" HorizontalAlignment="Left"/>
+                                                </StackPanel>
+                                            </Label.Content>
+                                        </Label>
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding JittPpA, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding JittPpB, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding JittPpC, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding JittPpD, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="0">
+                                            <Label Margin="5,2,0,2" Content="J2" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                            <TextBlock Text="(mUI)" Width="Auto" Height="Auto" VerticalAlignment="Center" Margin="0,2,0,0" HorizontalAlignment="Left"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding J2A, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding J2B, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding J2C, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding J2D, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+
+                                        <StackPanel Orientation="Horizontal"  Grid.Row="6" Grid.Column="0">
+                                            <Label Margin="5,2,0,1" Content="J9" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="25"/>
+                                            <TextBlock Text="(mUI)" Width="Auto" Height="Auto" VerticalAlignment="Center" Margin="0,2,0,0" HorizontalAlignment="Left"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding J9A, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="6" Grid.Column="2" Text="{Binding J9B, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding J9C, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+                                        <TextBlock Grid.Row="6" Grid.Column="4" Text="{Binding J9D, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Height="Auto" Width="Auto"/>
+
+                                        <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="0">
+                                            <Label Grid.Row="7" Grid.Column="0" Content="Mask Margin" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold"/>
+                                            <TextBlock Text="(%)" Width="Auto" Height="Auto" VerticalAlignment="Center" Margin="0,2,0,0" HorizontalAlignment="Left"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding MaskMarginA, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                                        <TextBlock Grid.Row="7" Grid.Column="2" Text="{Binding MaskMarginB, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                                        <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding MaskMarginC, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                                        <TextBlock Grid.Row="7" Grid.Column="4" Text="{Binding MaskMarginD, ConverterParameter=Bert, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Width="Auto"/>
+
+                                        <Label Grid.Row="8" Grid.Column="0" Content="BER" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding BerA, Converter={StaticResource ExponentialConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                                        <TextBlock Grid.Row="8" Grid.Column="2" Text="{Binding BerB, Converter={StaticResource ExponentialConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                                        <TextBlock Grid.Row="8" Grid.Column="3" Text="{Binding BerC, Converter={StaticResource ExponentialConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                                        <TextBlock Grid.Row="8" Grid.Column="4" Text="{Binding BerD, Converter={StaticResource ExponentialConverter}, Mode=OneWay}" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Width="Auto"/>
+
+                                        <StackPanel Orientation="Horizontal" Grid.Row="9" Grid.Column="0" Margin="5,0,0,0">
+                                            <TextBlock Text="D" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Symbol"/>
+                                            <Label Content="OMA" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" FontWeight="Bold"/>
+                                            <TextBlock Text="max" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="10" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock Text=" (dB)" Width="Auto" Height="Auto" VerticalAlignment="Center" Margin="0,2,0,0" HorizontalAlignment="Left"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding MaxOmaDelta, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}"
+                                                   HorizontalAlignment="Center" FontSize="12" FontWeight="Bold" Width="Auto" VerticalAlignment="Center"/>
+
+                                        <!--<TextBlock Grid.Row="10" Grid.Column="0" Text="Tx Bias"/>
+                                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Tx Power"/>-->
+
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+
+                        </TabControl>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Grid.Row="2" Header="Настройка TEC" Style="{StaticResource ThickBlackBorderGroupBox}" Height="260">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="3*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="3" BorderBrush="{StaticResource ChannelConfigurationBorderBrush}" BorderThickness="0 2 0 0"/>
+
+                    <Grid Margin="0,0,0,11">
+                        <Grid.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FFFDFDFD"/>
+                                <GradientStop Color="#B7FBFBE9" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="16"/>
+                            <RowDefinition Height="50"/>
+                        </Grid.RowDefinitions>
+                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Top">
+                            <CheckBox IsChecked="{Binding RefreshTecParameters}" Margin="10,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Text="Непрерывный контроль параметров" TextWrapping="Wrap" TextAlignment="Center" FontWeight="DemiBold"/>
+                            </CheckBox>
+                        </WrapPanel>
+                        <DataGrid Grid.Row="1" Margin="5,0" ItemsSource="{Binding TecDataGridItems}" ColumnHeaderStyle="{StaticResource CenteredDataGridColumnHeader}" 
+                                  CellStyle="{StaticResource TecDataGridCell}" VerticalScrollBarVisibility="Disabled" CanUserResizeColumns="False" CanUserReorderColumns="False" 
+                                  CanUserSortColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" HeadersVisibility="Column" IsReadOnly="True" HorizontalContentAlignment="Center" 
+                                  VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Disabled" SelectionUnit="Cell" Foreground="#FF04114F">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Темп. TEC(mv)" Width="*" Binding="{Binding TecTemp}" FontSize="14" />
+                                <DataGridTextColumn Header="Напр. на ЦАП (mV)" Width="*" Binding="{Binding DacVoltage}" FontSize="14"/>
+                                <DataGridTextColumn Header="Ток TEC (mA)" Width="*" Binding="{Binding Current}" FontSize="14"/>
+                                <DataGridTextColumn Header="Напр. TEC (mV)" Width="*" Binding="{Binding Voltage}" FontSize="14"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+
+                    <Grid Background="#BAFBFBE9" Grid.RowSpan="3" Margin="0,72,0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="527*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition Height="Auto" MinHeight="25"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0,0,0" Height="23" >
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Уставка TEC" VerticalAlignment="Top" FontSize="14"/>
+                            <TextBox x:Name="TbTemperature" Margin="10,0" Text="{Binding Value, ElementName=TecSlider}" IsEnabled="{Binding IsEnabled, ElementName=TecSlider}" 
+                                     PreviewKeyUp="TbTemperature_PreviewKeyUp" FontSize="14"/>
+                            <Button x:Name="btnAutoTecTune" HorizontalAlignment="Right" Margin="10,0,0,0" IsEnabled="{Binding IsOsaConnected}" FontSize="14"
+                                    IsEnabledChanged="btnAutoTecTune_IsEnabledChanged">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+                                        <Setter Property="Content" Value="Автонастройка"/>
+                                        <Setter Property="Command" Value="{Binding AutoTuneTecCommand}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsAutotuneProcessing}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="Content" Value="Отменить"/>
+                                                    <Setter Property="Command" Value="{Binding CancelAutoTuningCommand}"/>
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <!--<StackPanel Orientation="Horizontal" Margin="130,0,0,0">
+                                <TextBlock Text="S" FontFamily="Symbol" FontSize="16" Foreground="Blue" VerticalAlignment="Top" FontWeight="DemiBold"/>
+                                <TextBlock Text=" |D|" FontFamily="Symbol" FontSize="13" Foreground="Blue" VerticalAlignment="Bottom" FontWeight="DemiBold"/>
+                                <TextBlock Text=" = " FontFamily="Symbol" FontSize="15" Foreground="Blue" VerticalAlignment="Top" FontWeight="DemiBold"/>
+                                <TextBox Text="{Binding SumOfDeltas, Converter={StaticResource NullableDoubleConverter}, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" Foreground="Blue" FontWeight="Bold"/>
+                            </StackPanel>-->
+                            <!--<Button Content="Обновить" x:Name="btnRefreshPeaks" Command="{Binding RefreshOsaDataCommand}" IsEnabled="{Binding IsOsaConnected}" Margin="5,0,0,0" Visibility="Hidden"/>-->
+                            <ProgressBar Margin="15,0,0,0" Width="200" x:Name="pbAutoTune" IsIndeterminate="True">
+                                <ProgressBar.Style>
+                                    <Style TargetType="ProgressBar">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsAutotuneProcessing}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ProgressBar.Style>
+                            </ProgressBar>
+                            <TextBlock Text="Автонастройка завершена" Panel.ZIndex="2" Foreground="Green" FontWeight="Bold" FontSize="14" Margin="20,0,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsAutoTecOk}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </WrapPanel>
+                        <Slider x:Name="TecSlider" Grid.Row="1" Value="{Binding TecOptimalTemperatureVoltage}" VerticalAlignment="Center" SmallChange="1" 
+                                Minimum="2150" Maximum="2250" PreviewMouseUp="WriteTecOptimalTemperatureVoltage" IsEnabled="{Binding IsTecSliderEnabled}" PreviewKeyDown="TecSlider_PreviewKeyDown" AutoToolTipPlacement="BottomRight" Height="18"/>
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,0" Grid.Row="2" TextWrapping="Wrap" Text="{Binding ElementName=TecSlider, Path=Minimum}" Height="16" Width="26"/>
+                        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,4,0" Grid.Row="2" TextWrapping="Wrap" Text="{Binding ElementName=TecSlider, Path=Maximum}" Height="16" Width="26"/>
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="2" Text="{Binding ElementName=TecSlider, Path=Value}" FontWeight="Bold" Height="16" Width="27" />
+                    </Grid>
+
+                    <Grid Grid.Row="2">
+                        <Grid.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#7FF1F3DF" Offset="0"/>
+                                <GradientStop Color="#7F94D399" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="11*"/>
+                            <RowDefinition Height="36*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,1" Width="294">
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Длина волны по каналам от OSA MS9740A" VerticalAlignment="Center" FontSize="14" FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" Margin="0,2,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="16*"/>
+                                <RowDefinition Height="29*"/>
+                                <RowDefinition Height="30*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,1" Width="68">
+                                <TextBlock Text="D" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Symbol"/>
+                                <TextBlock Text="λ1 = " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12"/>
+                                <!--<TextBlock Text="D= " FontFamily="Symbol" Foreground="Blue" Margin="5,0,0,0" VerticalAlignment="Bottom"/>-->
+                                <TextBlock x:Name="delta1"  HorizontalAlignment="Right" Text="{Binding Delta1, Converter={StaticResource NullableDoubleConverter},Mode=OneWay}" VerticalAlignment="Center"
+                                           FontSize="14" Foreground="Blue" Width="Auto"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,1" Width="68" >
+                                <TextBlock Text="D" FontFamily="Symbol" VerticalAlignment="Center" FontSize="12"/>
+                                <TextBlock Text="λ2 = " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12"/>
+                                <TextBlock x:Name="delta2" Foreground="Blue" HorizontalAlignment="Right" Text="{Binding Delta2, Converter={StaticResource NullableDoubleConverter},Mode=OneWay}"
+                                           VerticalAlignment="Center" FontSize="14" Width="Auto"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Margin="0,0,0,1" Width="68" >
+                                <TextBlock Text="D" FontFamily="Symbol" VerticalAlignment="Center" FontSize="12"/>
+                                <TextBlock Text="λ3 = " VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12"/>
+                                <TextBlock x:Name="delta3" Foreground="Blue" HorizontalAlignment="Right" Text="{Binding Delta3, Converter={StaticResource NullableDoubleConverter},Mode=OneWay}" 
+                                           VerticalAlignment="Center" FontSize="14" Width="Auto"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Margin="0,0,0,1" Width="68" >
+                                <TextBlock Text="D" FontFamily="Symbol" VerticalAlignment="Center" FontSize="12"/>
+                                <TextBlock Text="λ4 = " VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12"/>
+
+                                <TextBlock x:Name="delta4" Foreground="Blue" HorizontalAlignment="Right" Text="{Binding Delta4, Converter={StaticResource NullableDoubleConverter},Mode=OneWay}" 
+                                           VerticalAlignment="Center" FontSize="14" Width="Auto"/>
+                            </StackPanel>
+
+                            <TextBox x:Name="Peak11" Text="{Binding Lambda1PeakValue, Converter={StaticResource NullableLambdaConverter},Mode=OneWay}" Grid.Row="1"
+                                                         HorizontalAlignment="Center" Style="{StaticResource LambdaValueStyle}" VerticalAlignment="Center" 
+                                                         IsReadOnly="True" TextChanged="Peak1_TextChanged" Height="22" Width="100" />
+                            <TextBox x:Name="Peak12" Text="{Binding Lambda2PeakValue, Converter={StaticResource NullableLambdaConverter},Mode=OneWay}" Grid.Row="1" Grid.Column="1"
+                                                         HorizontalAlignment="Center" Style="{StaticResource LambdaValueStyle}" VerticalAlignment="Center"
+                                                         IsReadOnly="True" TextChanged="Peak2_TextChanged" Height="22" Width="100" />
+                            <TextBox x:Name="Peak13" Text="{Binding Lambda3PeakValue, Converter={StaticResource NullableLambdaConverter},Mode=OneWay}" Grid.Row="1" Grid.Column="2"
+                                                         HorizontalAlignment="Center" Style="{StaticResource LambdaValueStyle}" VerticalAlignment="Center"
+                                                         IsReadOnly="True" TextChanged="Peak3_TextChanged" Height="22" Width="100" />
+                            <TextBox x:Name="Peak14" Text="{Binding Lambda4PeakValue, Converter={StaticResource NullableLambdaConverter},Mode=OneWay}" Grid.Row="1" Grid.Column="3"
+                                                         HorizontalAlignment="Center" Style="{StaticResource LambdaValueStyle}" VerticalAlignment="Center"
+                                                         IsReadOnly="True" TextChanged="Peak4_TextChanged" Height="22" Width="100" />
+
+                            <TextBlock Text="1295.56" Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="12"  Height="16" Width="45"/>
+                            <TextBlock Text="1300.05" Grid.Row="2" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="12" Height="16" Width="45"/>
+                            <TextBlock Text="1304.58" Grid.Row="2" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="12" Height="16" Width="45"/>
+                            <TextBlock Text="1309.14" Grid.Row="2" Grid.Column="3" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="12"  Height="16" Width="45"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+            <!--<TextBlock Text="Автонастройка завершена" Foreground="Green" HorizontalAlignment="Center" FontWeight="DemiBold" VerticalAlignment="Top">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Hidden"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsAutoTecOk}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>-->
+        </StackPanel>
+
+        <TabControl x:Name="TabContr" Grid.Column="1" TabStripPlacement="Left" HorizontalAlignment="Left" Width="940" BorderBrush="#FF686767">
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="TabItem">
+                    <Setter Property="Selector.Background" Value="AntiqueWhite"/>
+                    <Setter Property="LayoutTransform">
+                        <Setter.Value>
+                            <RotateTransform Angle="270"/>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.ItemContainerStyle>
+            <TabControl.Style>
+                <Style TargetType="TabControl">
+                    <Setter Property="IsEnabled" Value="True"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsOperationInProgress}" Value="True">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TabControl.Style>
+            <TabItem Header="Конфигурация лазеров" x:Name="LaserConfig">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsModuleConnected}" Value="False">
+                                        <Setter Property="Background" Value="{StaticResource DisabledConfigGridBackgroundBrush}"/>
+                                    </DataTrigger>
+
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ZeroChannel.IsEnabled}" Value="False"/>
+                                            <Condition Binding="{Binding FirstChannel.IsEnabled}" Value="False"/>
+                                            <Condition Binding="{Binding SecondChannel.IsEnabled}" Value="False"/>
+                                            <Condition Binding="{Binding ThirdChannel.IsEnabled}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+
+                                        <Setter Property="Background" Value="{StaticResource DisabledConfigGridBackgroundBrush}"/>
+                                    </MultiDataTrigger>
+
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Header="Канал 0" x:Name="gbCh0" Style="{StaticResource ThickBlackBorderGroupBox}" Grid.Column="0" Grid.Row="0">
+                            <channelContols:ZeroChannelGrid/>
+                        </GroupBox>
+
+                        <GroupBox Header="Канал 1" Style="{StaticResource ThickBlackBorderGroupBox}" Grid.Column="1" Grid.Row="0" >
+                            <channelContols:FirstChannelGrid/>
+                        </GroupBox>
+
+                        <GroupBox Header="Канал 2" x:Name="grbCh2" Style="{StaticResource ThickBlackBorderGroupBox}" Grid.Row="1" Grid.Column="0">
+                            <channelContols:SecondChannelGrid/>
+                        </GroupBox>
+
+                        <GroupBox Header="Канал 3" Style="{StaticResource ThickBlackBorderGroupBox}" Grid.Row="1" Grid.Column="1">
+                            <channelContols:ThirdChannelGrid/>
+                        </GroupBox>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Канал 0" x:Name="tabItemCh0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Header="Конфигурация лазера" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource ThickBlackBorderGroupBox}">
+                            <channelContols:ZeroChannelGrid/>
+                        </GroupBox>
+
+                        <GroupBox Header="Clock and Data Recovery(Tx)" Grid.Column="0" Grid.Row="1"   Style="{StaticResource ThickBlackBorderGroupBox}">
+                            <cdrControls:ZeroCdrTxControl/>
+                        </GroupBox>
+
+                        <GroupBox Header="Clock and Data Recovery(Rx)" Grid.Column="1" Grid.Row="1"  Style="{StaticResource ThickBlackBorderGroupBox}">
+                            <cdrControls:ZeroCdrRxControl/>
+                        </GroupBox>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Канал 1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Header="Конфигурация лазера" Style="{StaticResource ThickBlackBorderGroupBox}" Grid.ColumnSpan="2">
+                            <channelContols:FirstChannelGrid>
+                            </channelContols:FirstChannelGrid>
+                        </GroupBox>
+
+                        <GroupBox Header="Clock and Data Recovery(Tx)" Grid.Column="0" Grid.Row="1" Style="{StaticResource ThickBlackBorderGroupBox}" >
+                            <cdrControls:FirstCdrTxControl>
+                            </cdrControls:FirstCdrTxControl>
+                        </GroupBox>
+
+                        <GroupBox Header="Clock and Data Recovery(Rx)" Grid.Column="1" Grid.Row="2" Style="{StaticResource ThickBlackBorderGroupBox}">
+                            <cdrControls:FirstCdrRxControl>
+                            </cdrControls:FirstCdrRxControl>
+                        </GroupBox>
+
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Канал 2">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Header="Конфигурация лазера" Style="{StaticResource ThickBlackBorderGroupBox}" Grid.ColumnSpan="2">
+                            <channelContols:SecondChannelGrid>
+                            </channelContols:SecondChannelGrid>
+                        </GroupBox>
+
+                        <GroupBox Header="Clock and Data Recovery(Tx)" Grid.Column="0" Grid.Row="1" Style="{StaticResource ThickBlackBorderGroupBox}">
+                            <cdrControls:SecondCdrTxControl>
+                            </cdrControls:SecondCdrTxControl>
+                        </GroupBox>
+
+                        <GroupBox Header="Clock and Data Recovery(Rx)" Grid.Column="1" Grid.Row="1" Style="{StaticResource ThickBlackBorderGroupBox}">
+                            <cdrControls:SecondCdrRxControl>
+                            </cdrControls:SecondCdrRxControl>
+                        </GroupBox>
+
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Канал 3">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Header="Конфигурация лазера" Style="{StaticResource ThickBlackBorderGroupBox}" Grid.ColumnSpan="2">
+                            <channelContols:ThirdChannelGrid>
+                            </channelContols:ThirdChannelGrid>
+                        </GroupBox>
+                        <GroupBox Header="Clock and Data Recovery(Tx)" Grid.Row="1" Grid.Column="0"  Style="{StaticResource ThickBlackBorderGroupBox}">
+                            <cdrControls:ThirdCdrTxControl>
+                            </cdrControls:ThirdCdrTxControl>
+                        </GroupBox>
+                        <GroupBox Header="Clock and Data Recovery(Rx)" Grid.Row="1" Grid.Column="1" Style="{StaticResource ThickBlackBorderGroupBox}">
+                            <cdrControls:ThirdCdrRxControl>
+                            </cdrControls:ThirdCdrRxControl>
+                        </GroupBox>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Настройки" Visibility="Hidden" x:Name="tiSettings">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" Margin="10" Height="20">
+                        <TextBlock Text="Предел средней дельты для окончания автонастройки TEC " VerticalAlignment="Center"/>
+                        <TextBox  x:Name="tbSigma" Text="{Binding Sigma}" LostFocus="tbSigma_LostFocus"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
